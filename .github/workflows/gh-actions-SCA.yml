@@ -16,13 +16,22 @@ jobs:
     name: Build, Publish, and Stage
     steps:
     - uses: actions/checkout@v2
-    - name: Run a multi-line script
-      run: |
-        npm install --global @cyclonedx/cyclonedx-npm
-        npm i -g typescript ts-node
-        npm install --production --unsafe-perm
-        npm dedupe
-      shell: bash
+    - name: Install CycloneDX
+      run: npm install --global @cyclonedx/cyclonedx-npm     
+    - name: Install dependencies
+      env:
+        NODE_ENV: development
+        NPM_CONFIG_PRODUCTION: "false"
+      run: npm ci
+    
+    - name: Generate SBOM
+      run: cyclonedx-npm --output-file bom.json --output-format JSON
+    
+    - name: Build application
+      run: npm run build
+    
+    - name: Remove development dependencies
+      run: npm prune --omit=dev
     - name: Create BOM
       run: |
         npm install -g @cyclonedx/cyclonedx-npm@latest

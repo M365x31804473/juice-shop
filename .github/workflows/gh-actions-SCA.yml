@@ -22,7 +22,7 @@ jobs:
       env:
         NODE_ENV: development
         NPM_CONFIG_PRODUCTION: "false"
-      run: npm ci
+      run: npm install --include=dev
     
     - name: Generate SBOM
       run: cyclonedx-npm --output-file bom.json --output-format JSON
